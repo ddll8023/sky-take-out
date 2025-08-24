@@ -1,10 +1,14 @@
 package com.sky.controller.admin;
 
+import com.alibaba.druid.sql.visitor.functions.IfNull;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
+import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
@@ -13,10 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,11 +82,76 @@ public class EmployeeController {
     * 新增员工
     * @param employeeDTO
     * */
-    @PostMapping("/")
+    @PostMapping("")
     @ApiOperation(value = "新增员工")
-    public Result AddEmployee(EmployeeDTO employeeDTO){
+    public Result addEmployee(@RequestBody EmployeeDTO employeeDTO){
         log.info("新增员工：{}",employeeDTO.getUsername());
         employeeService.addEmployee(employeeDTO);
         return Result.success();
+    }
+
+    /**
+     * 分页查询员工
+     * @param employeePageQueryDTO
+     * @return
+     */
+    @GetMapping("/page")
+    @ApiOperation(value = "分页查询员工")
+    public Result<PageResult> pageQuery(EmployeePageQueryDTO employeePageQueryDTO){
+        log.info("分页查询:{};第{}页",employeePageQueryDTO.getName(),employeePageQueryDTO.getPage());
+        PageResult pageResult = employeeService.pageQueryEmployee(employeePageQueryDTO);
+        return Result.success(pageResult);
+    }
+
+    /**
+     * 启用、禁用员工账号
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation(value = "启用、禁用员工账号")
+    public Result changeStatusEmployee(@PathVariable Integer status, Long id){
+        log.info("{}员工账号:{}",status==1?"禁用":"启用",id);
+        employeeService.changeStatusEmployee(status,id);
+        return Result.success();
+    }
+
+    /**
+     * 编辑员工信息
+     * @param employeeDTO
+     * @return
+     */
+    @PutMapping("")
+    @ApiOperation(value = "编辑员工信息")
+    public Result editEmployee(@RequestBody EmployeeDTO employeeDTO){
+        log.info("编辑员工信息：{}",employeeDTO.getUsername());
+        employeeService.editEmployee(employeeDTO);
+        return Result.success();
+    }
+
+    /**
+     * 根据id查询员工
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation(value = "根据id查询员工")
+    public Result<Employee> queryEmployee(@PathVariable Long id){
+        log.info("根据id查询员工：{}",id);
+        return Result.success(employeeService.queryEmployee(id));
+    }
+
+    /**
+     * 修改密码
+     * @param passwordEditDTO
+     * @return
+     */
+    @PutMapping("/editPassword")
+    @ApiOperation(value = "修改密码")
+    public Result changePassword(@RequestBody PasswordEditDTO passwordEditDTO){
+        log.info("修改密码:{}",passwordEditDTO.getEmpId());
+        employeeService.changePassword(passwordEditDTO);
+        return  Result.success();
     }
 }

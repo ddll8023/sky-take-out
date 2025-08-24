@@ -1,19 +1,25 @@
 package com.sky.dto;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
+@ApiModel(description = "员工分页查询DTO")
 public class EmployeePageQueryDTO implements Serializable {
 
     //员工姓名
+    @ApiModelProperty(value = "员工姓名")
     private String name;
 
     //页码
-    private int page;
+    @ApiModelProperty(value = "页码")
+    private int page =1;
 
     //每页显示记录数
-    private int pageSize;
+    @ApiModelProperty(value = "每页显示记录数")
+    private int pageSize =10;
 
 }
