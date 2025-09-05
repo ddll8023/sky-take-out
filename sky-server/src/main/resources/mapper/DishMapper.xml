@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.sky.mapper.DishMapper">
+
+    <insert id="insert">
+        INSERT INTO dish (name, category_id, price, image, status, create_time, update_time, create_user, update_user)
+        VALUES (#{name}, #{categoryId}, #{price}, #{image}, #{status}, #{createTime}, #{updateTime}, #{createUser},
+                #{updateUser})
+    </insert>
+    <insert id="insertFlavor" parameterType="com.sky.entity.DishFlavor">
+        insert into dish_flavor (dish_id, name, value)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.dishId}, #{item.name}, #{item.value})
+        </foreach>
+    </insert>
+
+    <update id="update">
+        update dish
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateUser != null">update_user = #{updateUser}</if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="batchDeleteDish">
+        delete from dish
+        where id in
+        <foreach collection="dishIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <delete id="batchDeleteFlavor">
+        delete from dish_flavor
+        where dish_id in
+        <foreach collection="dishIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <delete id="deleteFlavor">
+        delete
+        from dish_flavor
+        where dish_id = #{dishId}
+    </delete>
+
+    <select id="pageQuery" resultType="com.sky.entity.Dish">
+        select * from dish
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        order by update_time desc
+    </select>
+    <select id="queryById" resultType="com.sky.entity.Dish">
+        select *
+        from dish
+        where id = #{id}
+    </select>
+    <select id="queryByCategoryId" resultType="com.sky.entity.Dish">
+        select *
+        from dish
+        where category_id = #{categoryId}
+          and status = 1
+        order by update_time desc
+    </select>
+    <select id="queryCategoryNameById" resultType="java.lang.String">
+        select name
+        from category
+        where id = #{categoryId}
+    </select>
+    <select id="queryFlavorByDishId" resultType="com.sky.entity.DishFlavor">
+        select *
+        from dish_flavor
+        where dish_id = #{dishId}
+    </select>
+    <select id="queryDishByName" resultType="java.lang.Long">
+        select *
+        from dish
+        where name = #{name}
+    </select>
+</mapper>

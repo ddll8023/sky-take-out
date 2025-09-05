@@ -6,3 +6,14 @@ sky:
     database: sky_take_out
     username: root
     password: admin123
+
+  alioss:
+    access-key-id: LTAI5tNeLLWz39r4Ez3Kxv3S
+    access-key-secret: m0EiwSJ7LaKtIBQHp5fJG3LeTQLk7A
+    bucket-name: skyalitest1
+    endpoint: oss-cn-beijing.aliyuncs.com
+
+  jwt:
+    admin-secret-key: itcast
+    admin-ttl: 7200000
+    admin-token-name: token
